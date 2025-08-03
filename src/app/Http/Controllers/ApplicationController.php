@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\RequestApplication;
 use App\Models\Attendance;
 
 class ApplicationController extends Controller
@@ -15,8 +16,14 @@ class ApplicationController extends Controller
         // クエリパラメータ ?tab=pending または ?tab=approved を取得
         $tab = $request->get('tab', 'pending'); // デフォルトは「承認待ち」
 
+        $applications = RequestApplication::where('user_id', auth()->id())
+            ->with('attendance') // 日付や詳細を表示するために
+            ->where('status', $tab)
+            ->latest()
+            ->get();
+
         // ステータスでフィルタリングされた勤怠データを取得
-        $applications = Attendance::where('status', $tab)->orderBy('date', 'desc')->get();
+        // $applications = Attendance::where('status', $tab)->orderBy('date', 'desc')->get();
 
         // ビューに渡す
         return view('applications.index', compact('applications', 'tab'));

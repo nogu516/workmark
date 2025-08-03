@@ -3,16 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RequestApplication extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'attendance_id',
         'user_id',
+        'date',
         'new_clock_in',
         'new_clock_out',
         'new_break_start',
         'new_break_end',
+        'new_break2_start',
+        'new_break2_end',
         'note',
         'status',
     ];

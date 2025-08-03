@@ -22,10 +22,16 @@
             <div>
                 <label>メールアドレス</label>
                 <input type="email" name="email" required>
+                @error('email')
+                <div class="error">{{ $message }}</div>
+                @enderror
             </div>
             <div>
                 <label>パスワード</label>
                 <input type="password" name="password" required>
+                @error('password')
+                <div class="error">{{ $message }}</div>
+                @enderror
             </div>
             <button type="submit">管理者ログインする</button>
         </form>

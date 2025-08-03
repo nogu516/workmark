@@ -7,9 +7,9 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use App\Actions\Fortify\CreateNewUser;
 use Laravel\Fortify\Contracts\LoginResponse;
-use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
-
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Cache\RateLimiting\Limit;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -45,6 +45,13 @@ class FortifyServiceProvider extends ServiceProvider
                 logger('Login redirect to: ' . RouteServiceProvider::HOME); // ←ログ出力
                 return redirect()->intended(RouteServiceProvider::HOME);
             }
+        });
+
+        // ログインのレートリミッター設定を追加
+        RateLimiter::for('login', function (Request $request) {
+            $email = (string) $request->email;
+
+            return Limit::perMinute(5)->by($email . $request->ip());
         });
     }
 }

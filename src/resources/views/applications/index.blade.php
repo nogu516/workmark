@@ -23,15 +23,24 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($applications as $attendance)
+            @foreach($applications as $application)
             <tr>
-                <td>{{ $attendance->status == 'pending' ? '承認待ち' : '承認済み' }}</td>
-                <td>{{ $attendance->user->name ?? '未登録' }}</td>
-                <td>{{\Carbon\Carbon::parse($attendance->date)->format('Y年m月d日') }}</td>
-                <td>{{ $attendance->note }}</td>
-                <td>{{\Carbon\Carbon::parse($attendance->created_at)->format('Y年m月d日 H:i')  }}</td>
-                <td><a href="{{ route('attendance.confirm', $attendance->id) }}">詳細</a></td>
+                <td>{{ $application->status === 'pending' ? '承認待ち' : '承認済み' }}</td>
+                <td>{{ $application->user->name ?? '未登録' }}</td>
+                <td>{{ optional($application->attendance?->clock_in)->format('Y年m月d日') ?? '-' }}</td>
+                <td>{{ $application->note }}</td>
+                <td>{{ $application->created_at->format('Y年m月d日 H:i') }}</td>
+                <td>
+                    <a href="{{ route('attendance.confirm', $application->id) }}" class="btn btn-primary">詳細</a>
+
+                    <form method="POST" action="{{ route('admin.request-applications.destroy', $application->id) }}" style="display: inline;" onsubmit="return confirm('本当に削除しますか？');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">削除</button>
+                    </form>
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
+</div>

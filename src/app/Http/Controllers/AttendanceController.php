@@ -160,51 +160,20 @@ class AttendanceController extends Controller
 
     public function confirm(Request $request, $id)
     {
-        $attendance = Attendance::with('user')->findOrFail($id); // ← 必ず取得！
-
-        // フォームから送られてきた値を取得（確認画面に渡す）
-        $data = $request->only([
-            'clock_in',
-            'clock_out',
-            'break_start',
-            'break_end',
-            'break2_start',
-            'break2_end',
-            'note',
-        ]);
-
-        return view('attendance.confirm', [
-            'attendance' => $attendance,
-            'data' => $data,
-        ]);
-    }
-
-    public function submit(Request $request, $id)
-    {
-        // 修正内容を保存し、申請一覧に追加（例：status = 'pending'）
         $attendance = Attendance::findOrFail($id);
-        $attendance->update([
-            'clock_in' => $request->clock_in,
-            'clock_out' => $request->clock_out,
-            'note' => $request->note,
-            'status' => 'pending',
-        ]);
-        return redirect()->route('applications.index');
-    }
 
-    private function calculateBreakMinutes(Request $request)
-    {
-        $total = 0;
+        $data = [
+            'attendance_id' => $id,
+            'user_id' => auth()->id(),
+            'new_clock_in' => $request->input('clock_in'),
+            'new_clock_out' => $request->input('clock_out'),
+            'new_break_start' => $request->input('break_start'),
+            'new_break_end' => $request->input('break_end'),
+            'new_break2_start' => $request->input('break2_start'),
+            'new_break2_end' => $request->input('break2_end'),
+            'note' => $request->input('note'),
+        ];
 
-        if ($request->filled(['break_start', 'break_end'])) {
-            $total += \Carbon\Carbon::parse($request->input('break_start'))
-                ->diffInMinutes(\Carbon\Carbon::parse($request->input('break_end')));
-        }
-
-        if ($request->filled(['break2_start', 'break2_end'])) {
-            $total += \Carbon\Carbon::parse($request->input('break2_start'))
-                ->diffInMinutes(\Carbon\Carbon::parse($request->input('break2_end')));
-        }
-        return $total;
+        return view('attendance.confirm', compact('attendance', 'data'));
     }
 }

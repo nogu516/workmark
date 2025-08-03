@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/attendance.index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/admin/attendance.index.css') }}">
 
-<body>
+<div class="attendance-list-container">
     @php
     $parsedDate = $date->copy(); // 1日固定での月表示にしたい場合
     @endphp
@@ -11,6 +11,7 @@
     <h2>{{ $parsedDate->format('Y年n月j日') }}の勤怠</h2>
 
     <form method="GET" action="{{ route('admin.attendance.index') }}" class="date-form" style="display: flex; gap: 10px; align-items: center;">
+        @csrf
         <button type="submit" name="prev" value="1">← 前日</button>
 
         {{-- カレンダー形式の入力 --}}
@@ -73,7 +74,5 @@
             @endforelse
         </tbody>
     </table>
-</body>
-
-</html>
+</div>
 @endsection

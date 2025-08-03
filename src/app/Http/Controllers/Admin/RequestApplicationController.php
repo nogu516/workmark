@@ -3,42 +3,101 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
 use App\Models\RequestApplication;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Models\Attendance;
 
 class RequestApplicationController extends Controller
 {
-    public function approve($id)
+    public function index(Request $request)
     {
-        $request = RequestApplication::findOrFail($id);
+        $tab = $request->get('tab', 'pending');
 
-        if ($request->status !== 'pending') {
-            return back()->with('error', 'すでに承認済みまたは却下されています。');
+        $requestApplications = RequestApplication::where('user_id', auth()->id())->get();
+
+        $applications = RequestApplication::with(['user', 'attendance'])
+            ->where('user_id', Auth::id())
+            ->where('status', $tab)
+            ->latest()
+            ->get();
+
+        return view('admin.requests.index', [
+            'applications' => $applications,
+            'tab' => $tab,
+            'request' => $request,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'attendance_id' => 'required|exists:attendances,id',
+            'user_id' => 'required|exists:users,id',
+            'new_clock_in' => 'nullable|date_format:H:i',
+            'new_clock_out' => 'nullable|date_format:H:i',
+            'new_break_start' => 'nullable|date_format:H:i',
+            'new_break_end' => 'nullable|date_format:H:i',
+            'note' => 'nullable|string',
+        ]);
+
+        // ✅ attendance_id から日付を取得
+        $attendance = Attendance::findOrFail($validated['attendance_id']);
+        $baseDate = Carbon::parse($attendance->date)->format('Y-m-d'); // 例: 2025-08-02
+
+        // ✅ 時刻だけの値に日付を足して datetime 形式に変換
+        foreach (['new_clock_in', 'new_clock_out', 'new_break_start', 'new_break_end'] as $field) {
+            if (array_key_exists($field, $validated) && !empty($validated[$field])) {
+                $validated[$field] = Carbon::createFromFormat('Y-m-d H:i', $baseDate . ' ' . $validated[$field]);
+            } else {
+                $validated[$field] = null;
+            }
         }
+        // ステータスを「pending（承認待ち）」にする
+        $validated['status'] = 'pending';
 
-        $request->status = 'approved';
-        $request->save();
+        // 登録処理（$request->all()は絶対に使わないこと！）保存
+        RequestApplication::create($validated);
 
-        // 勤怠を更新
-        $attendance = Attendance::find($request->attendance_id);
-        if ($attendance) {
-            $date = $attendance->date;
+        return redirect()->route('applications.index')->with('success', '申請を受け付けました。');
+    }
 
-            $attendance->clock_in = $request->new_work_start ? "$date {$request->new_work_start}:00" : $attendance->clock_in;
-            $attendance->clock_out = $request->new_work_end ? "$date {$request->new_work_end}:00" : $attendance->clock_out;
+    public function show($id)
+    {
+        $application = RequestApplication::with(['attendance', 'user'])->findOrFail($id);
+        return view('request_applications.show', compact('application'));
+    }
 
-            // 追加：休憩時間を反映
-            $attendance->break_start = $request->new_break_start ? "$date {$request->new_break_start}:00" : $attendance->break_start;
-            $attendance->break_end = $request->new_break_end ? "$date {$request->new_break_end}:00" : $attendance->break_end;
-            $attendance->break2_start = $request->new_break2_start ? "$date {$request->new_break2_start}:00" : $attendance->break2_start;
-            $attendance->break2_end = $request->new_break2_end ? "$date {$request->new_break2_end}:00" : $attendance->break2_end;
+    public function applicationIndex()
+    {
+        $applications = \App\Models\RequestApplication::where('user_id', auth()->id())
+            ->with('attendance')
+            ->latest()
+            ->get();
 
-            $attendance->note = $request->note;
+        return view('attendance.applications.index', compact('applications'));
+    }
 
-            $attendance->save();
-        }
+    public function confirm(Request $request)
+    {
+        $requestApp = new RequestApplication();
+        $requestApp->user_id = auth()->id();
+        $requestApp->attendance_id = $request->attendance_id;
+        $requestApp->start_time = $request->start_time;
+        $requestApp->end_time = $request->end_time;
+        $requestApp->status = 'pending'; // ← これがないと表示されない
+        $requestApp->save();
 
-        return redirect()->back()->with('success', '勤怠に反映しました');
+        return redirect()->route('requests.index');
+    }
+
+    public function destroy($id)
+    {
+        $application = RequestApplication::findOrFail($id);
+        $application->delete();
+
+        return redirect()->route('admin.request-applications.index')
+            ->with('success', '申請を削除しました。');
     }
 }

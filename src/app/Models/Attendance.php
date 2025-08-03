@@ -10,17 +10,26 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
+        'attendance_id',
         'user_id',
         'date',
-        'clock_in',
-        'clock_out',
-        'break_start',
-        'break_end',
+        'new_clock_in',
+        'new_clock_out',
+        'new_break_start',
+        'new_break_end',
+        'new_break2_start',
+        'new_break2_end',
+        'note',
+        'status',
     ];
 
-    // ユーザーとのリレーション
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function attendance()
+    {
+        return $this->belongsTo(Attendance::class);
     }
 }

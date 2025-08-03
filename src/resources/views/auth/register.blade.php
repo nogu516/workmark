@@ -8,8 +8,17 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
         <input type="text" name="name" placeholder="名前" value="{{ old('name') }}">
+        @error('name')
+        <div class="error">{{ $message }}</div>
+        @enderror
         <input type="email" name="email" placeholder="メールアドレス" value="{{ old('email') }}">
+        @error('email')
+        <div class="error">{{ $message }}</div>
+        @enderror
         <input type="password" name="password" placeholder="パスワード">
+        @error('password')
+        <div class="error">{{ $message }}</div>
+        @enderror
         <input type="password" name="password_confirmation" placeholder="パスワード確認">
         <button type="submit">登録する</button>
     </form>
