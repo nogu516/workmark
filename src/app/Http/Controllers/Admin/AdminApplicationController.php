@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\RequestApplication;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AdminApplicationController extends Controller
@@ -32,15 +33,33 @@ class AdminApplicationController extends Controller
             // 勤怠を更新
             $attendance = Attendance::lockForUpdate()->findOrFail($application->attendance_id);
 
-            $date = $attendance->date;
+            $date = Carbon::parse($attendance->date)->format('Y-m-d');
 
-            $attendance->clock_in     = $application->new_clock_in     ? "$date {$application->new_clock_in}:00"     : $attendance->clock_in;
-            $attendance->clock_out    = $application->new_clock_out    ? "$date {$application->new_clock_out}:00"    : $attendance->clock_out;
-            $attendance->break_start  = $application->new_break_start  ? "$date {$application->new_break_start}:00"  : $attendance->break_start;
-            $attendance->break_end    = $application->new_break_end    ? "$date {$application->new_break_end}:00"    : $attendance->break_end;
-            $attendance->break2_start = $application->new_break2_start ? "$date {$application->new_break2_start}:00" : $attendance->break2_start;
-            $attendance->break2_end   = $application->new_break2_end   ? "$date {$application->new_break2_end}:00"   : $attendance->break2_end;
-            $attendance->note         = $application->note;
+            $attendance->clock_in = $application->new_clock_in
+                ? Carbon::parse($application->new_clock_in)->format('Y-m-d H:i:s')
+                : $attendance->clock_in;
+
+            $attendance->clock_out = $application->new_clock_out
+                ? Carbon::parse($application->new_clock_out)->format('Y-m-d H:i:s')
+                : $attendance->clock_out;
+
+            $attendance->break_start = $application->new_break_start
+                ? Carbon::parse($application->new_break_start)->format('Y-m-d H:i:s')
+                : $attendance->break_start;
+
+            $attendance->break_end = $application->new_break_end
+                ? Carbon::parse($application->new_break_end)->format('Y-m-d H:i:s')
+                : $attendance->break_end;
+
+            $attendance->break2_start = $application->new_break2_start
+                ? Carbon::parse($application->new_break2_start)->format('Y-m-d H:i:s')
+                : $attendance->break2_start;
+
+            $attendance->break2_end = $application->new_break2_end
+                ? Carbon::parse($application->new_break2_end)->format('Y-m-d H:i:s')
+                : $attendance->break2_end;
+
+            $attendance->note = $application->note;
 
             $attendance->save();
 

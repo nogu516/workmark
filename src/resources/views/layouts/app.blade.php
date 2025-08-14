@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Workmark - 勤怠管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 
@@ -14,7 +15,7 @@
         <nav>
             <div class="header-bar">
                 <div class="logo">
-                    <img src="{{ asset('storage/images/coachtech-logo.svg') }}" alt="画像" style="height: 30px;"></a>
+                    <img src="{{ asset('storage/coachtech-logo.svg') }}" alt="画像" style="height: 30px;"></a>
                 </div>
                 <div class="nav-links">
                     <a href="{{ route('attendance.index') }}">勤怠</a>

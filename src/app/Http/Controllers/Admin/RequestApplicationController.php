@@ -84,9 +84,12 @@ class RequestApplicationController extends Controller
         $requestApp = new RequestApplication();
         $requestApp->user_id = auth()->id();
         $requestApp->attendance_id = $request->attendance_id;
-        $requestApp->start_time = $request->start_time;
-        $requestApp->end_time = $request->end_time;
-        $requestApp->status = 'pending'; // ← これがないと表示されない
+
+        // カラム名に合わせて修正
+        $requestApp->new_clock_in = $new_clock_in;
+        $requestApp->new_clock_out = $new_clock_out;
+
+        $requestApp->status = 'pending'; // ステータス設定
         $requestApp->save();
 
         return redirect()->route('requests.index');

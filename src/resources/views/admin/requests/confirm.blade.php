@@ -7,7 +7,6 @@
     <h2>勤怠詳細</h2>
 
     <form method="POST" action="{{ route('request_applications.store') }}">
-
         @csrf
         @foreach ($data as $key => $value)
         <input type="hidden" name="{{ $key }}" value="{{ $value }}">

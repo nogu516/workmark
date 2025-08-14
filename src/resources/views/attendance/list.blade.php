@@ -7,7 +7,7 @@
     <h2>勤怠一覧</h2>
 
     <form method="GET" action="{{ route('attendance.list') }}" class="mb-4">
-
+        @csrf
         {{-- 前月・翌月 --}}
         <a href="{{ route('attendance.list', ['year' => \Carbon\Carbon::create($year, $month)->subMonth()->year, 'month' => \Carbon\Carbon::create($year, $month)->subMonth()->month]) }}">← 前月</a>
         <select name="year">
