@@ -10,6 +10,8 @@
         @csrf
         @foreach ($data as $key => $value)
         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+        <input type="hidden" name="attendance_id" value="{{ $attendance->id }}">
+        <input type="hidden" name="user_id" value="{{ $attendance->user->id }}">
         @endforeach
 
         <table class="attendance-table">
@@ -42,7 +44,7 @@
                 <td>{{ $attendance->note ?? '-' }}</td>
             </tr>
         </table>
-        <div class="bottom-right-message">承認画面のため修正できません</div>
+        <div class="bottom-right-message">承認待ちのため修正できません</div>
     </form>
 </div>
 @endsection

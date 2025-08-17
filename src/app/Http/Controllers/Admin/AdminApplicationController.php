@@ -15,9 +15,16 @@ class AdminApplicationController extends Controller
     {
         $tab = $request->input('tab', 'pending');     // pending / approved / all
 
-        $applications = RequestApplication::with(['user', 'attendance'])
-            ->latest()
-            ->get();
+        $query = RequestApplication::with(['user', 'attendance'])->latest();
+
+        if ($tab === 'pending') {
+            $query->where('status', 'pending');
+        } elseif ($tab === 'approved') {
+            $query->where('status', 'approved');
+        }
+        // all の場合は絞り込みしない
+
+        $applications = $query->get();
 
         return view('admin.requests.index', compact('applications', 'tab'));
     }
@@ -71,5 +78,70 @@ class AdminApplicationController extends Controller
         return redirect()
             ->route('admin.requests.index', ['tab' => 'approved'])
             ->with('success', '申請を承認しました。');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'attendance_id' => 'required|exists:attendances,id',
+            'user_id' => 'required|exists:users,id',
+            'new_clock_in' => 'nullable|date_format:H:i',
+            'new_clock_out' => 'nullable|date_format:H:i',
+            'new_break_start' => 'nullable|date_format:H:i',
+            'new_break_end' => 'nullable|date_format:H:i',
+            'note' => 'nullable|string',
+        ]);
+
+        // ✅ attendance_id から日付を取得
+        $attendance = Attendance::findOrFail($validated['attendance_id']);
+        $baseDate = Carbon::parse($attendance->date)->format('Y-m-d'); // 例: 2025-08-02
+
+        // ✅ 時刻だけの値に日付を足して datetime 形式に変換
+        foreach (['new_clock_in', 'new_clock_out', 'new_break_start', 'new_break_end'] as $field) {
+            if (array_key_exists($field, $validated) && !empty($validated[$field])) {
+                $validated[$field] = Carbon::createFromFormat('Y-m-d H:i', $baseDate . ' ' . $validated[$field]);
+            } else {
+                $validated[$field] = null;
+            }
+        }
+        // ステータスを「pending（承認待ち）」にする
+        $validated['status'] = 'pending';
+
+        // 登録処理（$request->all()は絶対に使わないこと！）保存
+        RequestApplication::create($validated);
+
+        return redirect()->route('applications.index')->with('success', '申請を受け付けました。');
+    }
+
+    public function show($id)
+    {
+        $application = RequestApplication::with(['attendance', 'user'])->findOrFail($id);
+        return view('request_applications.show', compact('application'));
+    }
+
+    public function applicationIndex()
+    {
+        $applications = \App\Models\RequestApplication::where('user_id', auth()->id())
+            ->with('attendance')
+            ->latest()
+            ->get();
+
+        return view('attendance.applications.index', compact('applications'));
+    }
+
+    public function confirm(Request $request)
+    {
+        $requestApp = new RequestApplication();
+        $requestApp->user_id = auth()->id();
+        $requestApp->attendance_id = $request->attendance_id;
+
+        // カラム名に合わせて修正
+        $requestApp->new_clock_in = $new_clock_in;
+        $requestApp->new_clock_out = $new_clock_out;
+
+        $requestApp->status = 'pending'; // ステータス設定
+        $requestApp->save();
+
+        return redirect()->route('requests.index');
     }
 }

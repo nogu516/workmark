@@ -128,15 +128,15 @@ class AttendanceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $attendance = Attendance::where('id', $id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
-
+        $attendance = Attendance::findOrFail($id);
+        // バリデーション + 保存
+        // $attendance->clock_in = $request->clock_in;
+        // バリデーション
         $request->validate([
-            'clock_in'     => 'nullable|date_format:H:i',
-            'clock_out'    => 'nullable|date_format:H:i',
-            'break_start'  => 'nullable|date_format:H:i',
-            'break_end'    => 'nullable|date_format:H:i',
+            'clock_in' => 'nullable|date_format:H:i',
+            'clock_out' => 'nullable|date_format:H:i',
+            'break_start' => 'nullable|date_format:H:i',
+            'break_end' => 'nullable|date_format:H:i',
             'break2_start' => 'nullable|date_format:H:i',
             'break2_end' => 'nullable|date_format:H:i',
             'note' => 'nullable|string|max:255',
@@ -144,23 +144,29 @@ class AttendanceController extends Controller
 
         $date = $attendance->date;
 
-        // 時刻文字列 → datetime に変換
-        $attendance->clock_in = $request->clock_in ? "$date {$request->clock_in}:00" : null;
-        $attendance->clock_out = $request->clock_out ? "$date {$request->clock_out}:00" : null;
-        $attendance->break_start = $request->break_start ? "$date {$request->break_start}:00" : null;
-        $attendance->break_end = $request->break_end ? "$date {$request->break_end}:00" : null;
-        $attendance->break2_start = $request->break2_start ? "{$attendance->date} {$request->break2_start}:00" : null;
-        $attendance->break2_end = $request->break2_end ? "{$attendance->date} {$request->break2_end}:00" : null;
-        $attendance->note = $request->note;
+        // 修正申請用データ作成
+        $application = new \App\Models\RequestApplication();
+        $application->attendance_id = $attendance->id;
+        $application->user_id = auth()->id();
+        $application->new_clock_in = $request->clock_in ? "$date {$request->clock_in}:00" : null;
+        $application->new_clock_out = $request->clock_out ? "$date {$request->clock_out}:00" : null;
+        $application->new_break_start = $request->break_start ? "$date {$request->break_start}:00" : null;
+        $application->new_break_end = $request->break_end ? "$date {$request->break_end}:00" : null;
+        $application->new_break2_start = $request->break2_start ? "$date {$request->break2_start}:00" : null;
+        $application->new_break2_end = $request->break2_end ? "$date {$request->break2_end}:00" : null;
+        $application->note = $request->note;
+        $application->status = 'pending'; // 承認待ち
+        $application->save();
 
-        $attendance->save();
+        return redirect()->route('attendance.show', $attendance->id)
+            ->with('success', '修正申請を送信しました。承認待ちタブで確認できます。');
 
-        return redirect()->route('attendance.show', $attendance->id)->with('success', '勤怠を更新しました');
     }
 
     public function confirm(Request $request, $id)
     {
-        $attendance = Attendance::findOrFail($id);
+        $application = RequestApplication::findOrFail($id); // applicationsテーブルを参照
+        $attendance = Attendance::findOrFail($application->attendance_id); // attendancesから紐づく勤怠を取得
 
         $data = [
             'attendance_id' => $id,

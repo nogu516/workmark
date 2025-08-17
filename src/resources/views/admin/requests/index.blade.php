@@ -7,11 +7,11 @@
     <h2>勤怠修正申請一覧</h2>
 
     <div class="tabs">
-        <a href="{{ route('request_applications.index', ['tab' => 'pending']) }}"
+        <a href="{{ route('admin.requests.index', ['tab' => 'pending']) }}"
             class="{{ $tab === 'pending' ? 'font-bold underline' : '' }}">
             承認待ち
         </a> |
-        <a href="{{ route('request_applications.index', ['tab' => 'approved']) }}"
+        <a href="{{ route('admin.requests.index', ['tab' => 'approved']) }}"
             class="{{ $tab === 'approved' ? 'font-bold underline' : '' }}">
             承認済み
         </a>
@@ -38,7 +38,7 @@
                 <td>{{ $application->created_at->format('Y年m月d日 H:i') }}</td>
                 <td><a href="{{ route('admin.requests.confirm', $application->id) }}">詳細</a>
                     @if($tab === 'pending')
-                    <form method="POST" action="{{ route('admin.requests.approve', $application->id) }}">
+                    <form method="POST" action="{{ route('requests.approve', $application->id) }}">
                         @csrf
                         <button type="submit">承認する</button>
                     </form>

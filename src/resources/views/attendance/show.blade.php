@@ -6,7 +6,7 @@
 <div class="attendance-detail-container">
     <h2>勤怠詳細</h2>
 
-    <form method="POST" action="{{ route('attendance.confirm', $attendance->id) }}">
+    <form method="POST" action="{{ route('attendance.update', $attendance->id) }}">
         @csrf
         <input type="hidden" name="attendance_id" value="{{ $attendance->id }}">
         <input type="hidden" name="user_id" value="{{ $attendance->user_id }}">

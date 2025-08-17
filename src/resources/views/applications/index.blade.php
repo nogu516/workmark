@@ -31,7 +31,7 @@
                 <td>{{ $application->note }}</td>
                 <td>{{ $application->created_at->format('Y年m月d日 H:i') }}</td>
                 <td>
-                    <a href="{{ route('attendance.confirm', $application->id) }}" class="btn btn-primary">詳細</a>
+                    <a href="{{ route('attendance.confirm', ['id' => $application->id]) }}" class="btn btn-primary">詳細</a>
 
                     <form method="POST" action="{{ route('admin.request-applications.destroy', $application->id) }}" style="display: inline;" onsubmit="return confirm('本当に削除しますか？');">
                         @csrf

@@ -10,9 +10,10 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'attendance_id',
         'user_id',
         'date',
+        'clock_in',      // 新規作成時に入れる場合
+        'clock_out',
         'new_clock_in',
         'new_clock_out',
         'new_break_start',
@@ -28,8 +29,8 @@ class Attendance extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function attendance()
+    public function applications()
     {
-        return $this->belongsTo(Attendance::class);
+        return $this->hasMany(RequestApplication::class, 'attendance_id');
     }
 }

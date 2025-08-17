@@ -15,12 +15,10 @@ class RequestApplicationController extends Controller
 
         $requestApplications = RequestApplication::where('user_id', auth()->id())->get();
 
-        $applications = RequestApplication::with(['user', 'attendance'])->get();
-
-        // $applications = RequestApplication::with(['user', 'attendance'])
-        // ->where('user_id', auth()->id())
-        // ->where('status', $tab)
-        // ->get();
+        $applications = RequestApplication::with(['user', 'attendance'])
+        ->where('user_id', auth()->id())
+        ->where('status', $tab)
+        ->get();
 
         return view('applications.index', compact('applications', 'tab'));
     }
