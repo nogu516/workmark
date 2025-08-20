@@ -15,9 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
-
 Route::middleware('auth')->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
@@ -31,8 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     // 修正内容確認画面（POSTでデータを受け取り表示）
-    Route::get('/attendance/confirm/{id}', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
-    // Route::post('/attendance/confirm/{id}', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
+    Route::post('/attendance/confirm/{id}', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
 
     Route::post('/attendance/store-application', [AttendanceController::class, 'storeApplication'])->name('attendance.storeApplication');
 
@@ -47,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/request-applications/{id}/approve', [AdminApplicationController::class, 'approve'])->name('requests.approve');
 
     // 詳細確認
-    Route::get('/request-applications/{id}/confirm', [AdminApplicationController::class, 'confirm'])->name('requests.confirm');
+    // Route::get('/request-applications/{id}/confirm', [AdminApplicationController::class, 'confirm'])->name('requests.confirm');
 
     Route::post('/attendance/request', [RequestApplicationController::class, 'store'])->name('attendance.request');
 

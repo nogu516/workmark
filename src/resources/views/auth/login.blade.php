@@ -6,7 +6,7 @@
 <div class="auth-container">
     <h2>ログイン</h2>
 
-    <form method="POST" action="{{ route('login.store') }}">
+    <form method="POST" action="{{ route('login') }}">
         @csrf
         <input type="email" name="email" placeholder="メールアドレス" value="{{ old('email') }}">
         @error('email')

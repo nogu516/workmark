@@ -23,6 +23,15 @@ class RequestApplication extends Model
         'status',
     ];
 
+    protected $casts = [
+        'new_clock_in' => 'datetime',
+        'new_clock_out' => 'datetime',
+        'new_break_start' => 'datetime',
+        'new_break_end' => 'datetime',
+        'new_break2_start' => 'datetime',
+        'new_break2_end' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

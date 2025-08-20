@@ -31,7 +31,17 @@
                 <td>{{ $application->note }}</td>
                 <td>{{ $application->created_at->format('Y年m月d日 H:i') }}</td>
                 <td>
-                    <a href="{{ route('attendance.confirm', ['id' => $application->id]) }}" class="btn btn-primary">詳細</a>
+                    <form action="{{ route('attendance.confirm', ['id' => $application->id]) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="clock_in" value="{{ $application->new_clock_in }}">
+                        <input type="hidden" name="clock_out" value="{{ $application->new_clock_out }}">
+                        <input type="hidden" name="break_start" value="{{ $application->new_break_start }}">
+                        <input type="hidden" name="break_end" value="{{ $application->new_break_end }}">
+                        <input type="hidden" name="break2_start" value="{{ $application->new_break2_start }}">
+                        <input type="hidden" name="break2_end" value="{{ $application->new_break2_end }}">
+                        <input type="hidden" name="note" value="{{ $application->note }}">
+                        <button type="submit" class="btn btn-primary">詳細</button>
+                    </form>
 
                     <form method="POST" action="{{ route('admin.request-applications.destroy', $application->id) }}" style="display: inline;" onsubmit="return confirm('本当に削除しますか？');">
                         @csrf

@@ -18,29 +18,29 @@
         <tr>
             <th>出勤</th>
             <td>
-                {{ optional(isset($data['new_clock_in']) ? \Carbon\Carbon::parse($data['new_clock_in']) : null)->format('H:i') ?? '未入力' }}
+                {{ $data['new_clock_in'] ? \Carbon\Carbon::parse($data['new_clock_in'])->format('H:i') : '未入力' }}
             </td>
         </tr>
         <tr>
             <th>退勤</th>
             <td>
-                {{ optional(isset($data['new_clock_out']) ? \Carbon\Carbon::parse($data['new_clock_out']) : null)->format('H:i') ?? '未入力' }}
+                {{ $data['new_clock_out'] ? \Carbon\Carbon::parse($data['new_clock_out'])->format('H:i') : '未入力' }}
             </td>
         </tr>
         <tr>
             <th>休憩1</th>
             <td>
-                {{ optional(isset($data['new_break_start']) ? \Carbon\Carbon::parse($data['new_break_start']) : null)->format('H:i') ?? '未入力' }}
+                {{ $data['new_break_start'] ? \Carbon\Carbon::parse($data['new_break_start'])->format('H:i') : '未入力' }}
                 〜
-                {{ optional(isset($data['new_break_end']) ? \Carbon\Carbon::parse($data['new_break_end']) : null)->format('H:i') ?? '未入力' }}
+                {{ $data['new_break_end'] ? \Carbon\Carbon::parse($data['new_break_end'])->format('H:i') : '未入力' }}
             </td>
         </tr>
         <tr>
             <th>休憩2</th>
             <td>
-                {{ optional(isset($data['new_break2_start']) ? \Carbon\Carbon::parse($data['new_break2_start']) : null)->format('H:i') ?? '未入力' }}
+                {{ $data['new_break2_start'] ? \Carbon\Carbon::parse($data['new_break2_start'])->format('H:i') : '未入力' }}
                 〜
-                {{ optional(isset($data['new_break2_end']) ? \Carbon\Carbon::parse($data['new_break2_end']) : null)->format('H:i') ?? '未入力' }}
+                {{ $data['new_break2_end'] ? \Carbon\Carbon::parse($data['new_break2_end'])->format('H:i') : '未入力' }}
             </td>
         </tr>
         <tr>
@@ -50,17 +50,4 @@
     </table>
     <div class="bottom-right-message">承認待ちのため修正できません</div>
 </div>
-<form id="autoSubmitForm" method="POST" action="{{ route('request_applications.store') }}">
-    @csrf
-    @foreach ($data as $key => $value)
-    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-    @endforeach
-    {{-- attendance_id --}}
-    <input type="hidden" name="attendance_id" value="{{ $data['attendance_id'] }}">
-</form>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('autoSubmitForm').submit();
-    });
-</script>
 @endsection

@@ -15,7 +15,7 @@
         <nav>
             <div class="header-bar">
                 <div class="logo">
-                    <img src="{{ asset('storage/coachtech-logo.svg') }}" alt="画像" style="height: 30px;"></a>
+                    <img src="{{ asset('storage/coachtech-logo.svg') }}" alt="画像" style="height: 30px;">
                 </div>
                 <div class="nav-links">
                     <a href="{{ route('attendance.index') }}">勤怠</a>

@@ -6,14 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Attendance; // Attendance モデルを使用
 use Illuminate\Support\Facades\Auth; // ユーザー認証用
 use App\Models\RequestApplication; // 勤怠修正申請モデルを使用
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
     /**
      * 勤怠登録画面の表示処理
      */
-    public function index()
+    public function index(Request $request)
     {
+
         // 今日の日付を取得
         $today = now()->toDateString();
 
@@ -25,6 +27,7 @@ class AttendanceController extends Controller
 
         // Bladeビューに attendance を渡して表示
         return view('attendance.index', compact('attendance'));
+
     }
 
     /**
@@ -90,13 +93,13 @@ class AttendanceController extends Controller
     {
         $today = now()->toDateString();
 
-        $attendance = Attendance::where('user_id', Auth::id())
+        $attendances = Attendance::where('user_id', Auth::id())
             ->where('date', $today)
             ->first();
 
-        if ($attendance && !$attendance->break_end) {
-            $attendance->break_end = now();
-            $attendance->save();
+        if ($attendances && !$attendances->break_end) {
+            $attendances->break_end = now();
+            $attendances->save();
         }
 
         return redirect()->route('attendance.index');
@@ -122,7 +125,7 @@ class AttendanceController extends Controller
 
     public function show($id)
     {
-        $attendance = Attendance::findOrFail($id); // ← 勤怠データを取得
+        $attendance = Attendance::with('user')->findOrFail($id);
         return view('attendance.show', compact('attendance')); // ← 渡す！
     }
 

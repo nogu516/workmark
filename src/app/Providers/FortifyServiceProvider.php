@@ -4,12 +4,10 @@ namespace App\Providers;
 
 use Laravel\Fortify\Fortify;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Fortify\Contracts\CreatesNewUsers;
 use App\Actions\Fortify\CreateNewUser;
-use Laravel\Fortify\Contracts\LoginResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -18,7 +16,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(CreatesNewUsers::class, CreateNewUser::class);
+
     }
 
     /**
@@ -26,11 +24,6 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->singleton(
-            \Laravel\Fortify\Contracts\LoginResponse::class,
-            \App\Actions\Fortify\LoginResponse::class
-        );
-
         Fortify::loginView(function () {
             return view('auth.login');
         });
@@ -39,15 +32,9 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.register');
         });
 
-        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
-            public function toResponse($request)
-            {
-                logger('Login redirect to: ' . RouteServiceProvider::HOME); // ←ログ出力
-                return redirect()->intended(RouteServiceProvider::HOME);
-            }
-        });
+        Fortify::createUsersUsing(CreateNewUser::class);
 
-        // ログインのレートリミッター設定を追加
+        // 🔹 レートリミッター設定
         RateLimiter::for('login', function (Request $request) {
             $email = (string) $request->email;
 

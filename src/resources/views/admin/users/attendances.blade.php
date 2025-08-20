@@ -72,7 +72,6 @@
                         </a>
                         @endif
                     </td>
-
                 </tr>
                 @endfor
         </tbody>
