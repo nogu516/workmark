@@ -33,9 +33,9 @@
             <tr>
                 <td>{{ $application->status === 'pending' ? '承認待ち' : '承認済み' }}</td>
                 <td>{{ $application->user->name ?? '未登録' }}</td>
-                <td>{{ optional($application->attendance?->clock_in)->format('Y年m月d日') ?? '-' }}</td>
+                <td>{{ optional($application->attendance->date) ? \Carbon\Carbon::parse($application->attendance->date)->format('Y年m月d日') : '-' }}</td>
                 <td>{{ $application->note }}</td>
-                <td>{{ $application->created_at->format('Y年m月d日 H:i') }}</td>
+                <td>{{ $application->created_at->format('Y年m月d日') }}</td>
                 <td><a href="{{ route('admin.requests.confirm', $application->id) }}">詳細</a>
                     @if($tab === 'pending')
                     <form method="POST" action="{{ route('requests.approve', $application->id) }}">

@@ -171,6 +171,8 @@ class AttendanceController extends Controller
         $application = RequestApplication::findOrFail($id); // applicationsテーブルを参照
         $attendance = Attendance::findOrFail($application->attendance_id); // attendancesから紐づく勤怠を取得
 
+        $applications = RequestApplication::with(['user', 'attendance'])->get();
+
         $data = [
             'attendance_id' => $id,
             'user_id' => auth()->id(),

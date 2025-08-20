@@ -5,7 +5,6 @@
 
 <div class="attendance-list-container">
     <h2>申請一覧</h2>
-
     <div class="tabs">
         <a href="{{ route('applications.index', ['tab' => 'pending']) }}" class="{{ $tab == 'pending' ? 'active' : '' }}">承認待ち</a>
         <a href="{{ route('applications.index', ['tab' => 'approved']) }}" class="{{ $tab == 'approved' ? 'active' : '' }}">承認済み</a>
@@ -27,7 +26,7 @@
             <tr>
                 <td>{{ $application->status === 'pending' ? '承認待ち' : '承認済み' }}</td>
                 <td>{{ $application->user->name ?? '未登録' }}</td>
-                <td>{{ optional($application->attendance?->clock_in)->format('Y年m月d日') ?? '-' }}</td>
+                <td>{{ optional($application->attendance?->date)? \Carbon\Carbon::parse($application->attendance->date)->format('Y年m月d日') : '-' }}</td>
                 <td>{{ $application->note }}</td>
                 <td>{{ $application->created_at->format('Y年m月d日 H:i') }}</td>
                 <td>
