@@ -14,7 +14,9 @@
         <button type="submit">出勤</button>
     </form>
 
-    @elseif ($attendance->clock_in && !$attendance->clock_out && !$attendance->break_start)
+    @elseif ($attendance->clock_in && !$attendance->clock_out)
+
+    @if (!$attendance->break_start)
     <p>勤務中</p>
     <form method="POST" action="{{ route('attendance.breakStart') }}">
         @csrf
@@ -26,13 +28,13 @@
     </form>
 
     @elseif ($attendance->break_start && !$attendance->break_end)
-    <p>休憩中</p>
+    <p>休憩中（1回目）</p>
     <form method="POST" action="{{ route('attendance.breakEnd') }}">
         @csrf
         <button type="submit">休憩戻</button>
     </form>
 
-    @elseif ($attendance->break_end && !$attendance->clock_out)
+    @elseif (!$attendance->break2_start)
     <p>勤務中（休憩後）</p>
     <form method="POST" action="{{ route('attendance.breakStart') }}">
         @csrf
@@ -43,7 +45,24 @@
         <button type="submit">退勤</button>
     </form>
 
-    @elseif ($attendance->clock_out)
+    @elseif ($attendance->break2_start && !$attendance->break2_end)
+    <p>休憩中（2回目）</p>
+    <form method="POST" action="{{ route('attendance.breakEnd') }}">
+        @csrf
+        <button type="submit">休憩戻</button>
+    </form>
+
+    @else
+    <p>勤務中（2回目休憩後）</p>
+    <form method="POST" action="{{ route('attendance.clockOut') }}">
+        @csrf
+        <button type="submit">退勤</button>
+    </form>
+    @endif
+
+    @else
     <p>お疲れさまでした！</p>
     @endif
-    @endsection
+
+</div>
+@endsection

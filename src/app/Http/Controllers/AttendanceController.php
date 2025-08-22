@@ -78,8 +78,14 @@ class AttendanceController extends Controller
             ->where('date', $today)
             ->first();
 
-        if ($attendance && !$attendance->break_start) {
-            $attendance->break_start = now();
+        if ($attendance) {
+            if (!$attendance->break_start) {
+                // 最初の休憩
+                $attendance->break_start = now();
+            } elseif (!$attendance->break2_start) {
+                // 2回目の休憩
+                $attendance->break2_start = now();
+            }
             $attendance->save();
         }
 
@@ -93,13 +99,17 @@ class AttendanceController extends Controller
     {
         $today = now()->toDateString();
 
-        $attendances = Attendance::where('user_id', Auth::id())
+        $attendance = Attendance::where('user_id', Auth::id())
             ->where('date', $today)
             ->first();
 
-        if ($attendances && !$attendances->break_end) {
-            $attendances->break_end = now();
-            $attendances->save();
+        if ($attendance) {
+            if ($attendance->break_start && !$attendance->break_end) {
+                $attendance->break_end = now();
+            } elseif ($attendance->break2_start && !$attendance->break2_end) {
+                $attendance->break2_end = now();
+            }
+            $attendance->save();
         }
 
         return redirect()->route('attendance.index');
