@@ -17,6 +17,17 @@
         @if (session('success'))
         <p style="color: green">{{ session('success') }}</p>
         @endif
+
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li style="color: red;">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
         <table class="attendance-table">
             <tr>
                 <th>名前</th>

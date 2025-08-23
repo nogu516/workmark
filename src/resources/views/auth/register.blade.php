@@ -20,6 +20,9 @@
         <div class="error">{{ $message }}</div>
         @enderror
         <input type="password" name="password_confirmation" placeholder="パスワード確認">
+        @error('password_confirmation')
+        <div class="error">{{ $message }}</div>
+        @enderror
         <button type="submit">登録する</button>
     </form>
     <a href="{{ route('login') }}">ログインはこちら</a>

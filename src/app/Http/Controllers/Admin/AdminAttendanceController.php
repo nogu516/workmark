@@ -45,4 +45,10 @@ class AdminAttendanceController extends Controller
 
         return view('admin.attendance.show', compact('attendance', 'year', 'month'));
     }
+
+    public function edit($id)
+    {
+        $attendance = Attendance::with('user')->findOrFail($id);
+        return view('admin.attendance.edit', compact('attendance'));
+    }
 }

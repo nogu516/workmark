@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attendance; // Attendance モデルを使用
 use Illuminate\Support\Facades\Auth; // ユーザー認証用
 use App\Models\RequestApplication; // 勤怠修正申請モデルを使用
+use App\Http\Requests\AttendanceUpdateRequest; // バリデーション用リクエスト
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -139,7 +140,7 @@ class AttendanceController extends Controller
         return view('attendance.show', compact('attendance')); // ← 渡す！
     }
 
-    public function update(Request $request, $id)
+    public function update(AttendanceUpdateRequest $request, $id)
     {
         $attendance = Attendance::findOrFail($id);
         // バリデーション + 保存

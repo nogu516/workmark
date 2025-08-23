@@ -92,4 +92,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
 
     Route::resource('request-applications', RequestApplicationController::class);
 
+    Route::get('/attendance/{id}/edit', [AdminAttendanceController::class, 'edit'])->name('admin.attendance.edit');
+    Route::post('/attendance/{id}/update', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
 });
