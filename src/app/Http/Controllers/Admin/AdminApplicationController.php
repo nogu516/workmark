@@ -131,14 +131,18 @@ class AdminApplicationController extends Controller
 
     public function confirm(Request $request)
     {
+        $request->validate([
+            'attendance_id' => 'required|exists:attendances,id',
+            'new_clock_in' => 'required|date_format:H:i',
+            'new_clock_out' => 'required|date_format:H:i',
+        ]);
+
         $requestApp = new RequestApplication();
         $requestApp->user_id = auth()->id();
         $requestApp->attendance_id = $request->attendance_id;
-
         // カラム名に合わせて修正
-        $requestApp->new_clock_in = $new_clock_in;
-        $requestApp->new_clock_out = $new_clock_out;
-
+        $requestApp->new_clock_in = $request->new_clock_in;
+        $requestApp->new_clock_out = $request->new_clock_out;
         $requestApp->status = 'pending'; // ステータス設定
         $requestApp->save();
 

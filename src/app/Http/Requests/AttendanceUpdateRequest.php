@@ -22,6 +22,7 @@ class AttendanceUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'attendance_id' => 'required|exists:attendances,id',
             'clock_in' => ['nullable', 'date_format:H:i'],
             'clock_out' => ['nullable', 'date_format:H:i', 'after_or_equal:clock_in'],
             'break_start' => ['nullable', 'date_format:H:i'],

@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <title>管理者ログイン</title>
-    <link rel="stylesheet" href="{{ asset('css/admin/login.css') }}">
-</head>
+@section('content')
+<link rel="stylesheet" href="{{ asset('css/admin/login.css') }}">
 
 <body>
     <div class="auth-container">
@@ -35,6 +31,6 @@
             </div>
             <button type="submit">管理者ログインする</button>
         </form>
+    </div>
 </body>
-
-</html>
+@endsection

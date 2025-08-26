@@ -31,3 +31,4 @@ Laravel 環境構築
 使用技術 ・PHP :8.2.28 ・Laravel:11.0 ・MySQL :8.0.26 ・nginx :1.21.1 ・jquery
 
 ER 図 ・新模擬案件2 のテーブル仕様書
+      ・VScode内
